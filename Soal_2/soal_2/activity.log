@@ -1,0 +1,62 @@
+[12-04-2025][20:58:23] - Successfully started decryption process with PID 2850.
+[12-04-2025][20:58:30] - a2V5bG9nZ2VyLmRsbA== - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - assignment.pdf - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - budget.xlsx - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - bWFsaWNpb3VzX3BheWxvYWQuYmluCg== - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - cGFzc3dvcmRfc3RlYWxlci5leGUK - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - cGhpc2hpbmdfdG9vbC5qYXIK - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - cm9vdGtpdF9oaWRkZW4uc3lzCg== - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - cmFuc29td2FyZV9zY3JpcHQuYmF0Cg== - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - d29ybV9zcHJlYWQucHkK - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - data_analysis.xlsx - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - design_sketch.psd - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - dHJvamFuLmV4ZQo= - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - draft_paper.docx - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - instructions.pdf - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - meeting_minutes.pdf - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - notes.txt - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - presentation.pptx - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - project_plan.docx - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - references.docx - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - report.docx - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - research_data.csv - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - schedule.ics - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - summary.txt - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - YmFja2Rvb3JfYWNjZXNzLnZicw== - Successfully moved to quarantine directory.
+[12-04-2025][20:58:30] - ZXhwbG9pdF9jb2RlLmpz - Successfully moved to quarantine directory.
+[12-04-2025][20:58:32] - a2V5bG9nZ2VyLmRsbA== - Successfully decrypted to keylogger.dll.
+[12-04-2025][20:58:32] - bWFsaWNpb3VzX3BheWxvYWQuYmluCg== - Successfully decrypted to malicious_payload.bin.
+[12-04-2025][20:58:32] - cGFzc3dvcmRfc3RlYWxlci5leGUK - Successfully decrypted to password_stealer.exe.
+[12-04-2025][20:58:32] - cGhpc2hpbmdfdG9vbC5qYXIK - Successfully decrypted to phishing_tool.jar.
+[12-04-2025][20:58:32] - cm9vdGtpdF9oaWRkZW4uc3lzCg== - Successfully decrypted to rootkit_hidden.sys.
+[12-04-2025][20:58:32] - cmFuc29td2FyZV9zY3JpcHQuYmF0Cg== - Successfully decrypted to ransomware_script.bat.
+[12-04-2025][20:58:32] - d29ybV9zcHJlYWQucHkK - Successfully decrypted to worm_spread.py.
+[12-04-2025][20:58:32] - dHJvamFuLmV4ZQo= - Successfully decrypted to trojan.exe.
+[12-04-2025][20:58:32] - YmFja2Rvb3JfYWNjZXNzLnZicw== - Successfully decrypted to backdoor_access.vbs.
+[12-04-2025][20:58:32] - ZXhwbG9pdF9jb2RlLmpz - Successfully decrypted to exploit_code.js.
+[12-04-2025][21:12:40] - assignment.pdf - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - backdoor_access.vbs - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - budget.xlsx - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - data_analysis.xlsx - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - design_sketch.psd - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - draft_paper.docx - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - exploit_code.js - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - instructions.pdf - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - keylogger.dll - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - malicious_payload.bin - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - meeting_minutes.pdf - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - notes.txt - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - password_stealer.exe - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - phishing_tool.jar - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - presentation.pptx - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - project_plan.docx - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - ransomware_script.bat - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - references.docx - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - report.docx - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - research_data.csv - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - rootkit_hidden.sys - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - schedule.ics - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - summary.txt - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - trojan.exe - Successfully returned to starter kit directory.
+[12-04-2025][21:12:40] - worm_spread.py - Successfully returned to starter kit directory.
+[12-04-2025][21:13:20] - Successfully shut off decryption process with PID 2850.
