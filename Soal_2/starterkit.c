@@ -1,71 +1,70 @@
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/wait.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+#include <ctype.h>
 #include <dirent.h>
 #include <fcntl.h>
-#include <time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
 #include <signal.h>
-#include <ctype.h>
-#include <stdarg.h>
+#include <time.h>
 
+#define DIR_KIT "starter_kit"
+#define DIR_ISOLATION "quarantine"
+#define FILE_LOG "activity.log"
+#define FILE_PID "daemon.pid"
+#define FILE_ZIP "starterkit.zip"
+#define URL_DOWNLOAD "drive.usercontent.google.com/u/0/uc?id=1_5GxIGfQr3mNKuavJbte_AoRkEQLXSKS&export=download"
 
-#define STARTER_KIT_DIR "starter_kit"
-#define QUARANTINE_DIR "quarantine"
-#define LOG_FILE "activity.log"
-#define PID_FILE "daemon.pid"
-#define DOWNLOAD_URL "drive.usercontent.google.com/u/0/uc?id=1_5GxIGfQr3mNKuavJbte_AoRkEQLXSKS&export=download"
-#define ZIP_NAME "starterkit.zip"
+void log_activity(const char *fmt, ...) {
+    FILE *fp = fopen(FILE_LOG, "a");
+    if (!fp) return;
 
-void write_log(const char *format, ...) {
-    FILE *log = fopen(LOG_FILE, "a");
-    if (!log) return;
-
-    time_t now = time(NULL);
-    struct tm *t = localtime(&now);
-    fprintf(log, "[%02d-%02d-%04d][%02d:%02d:%02d] - ",
-            t->tm_mday, t->tm_mon + 1, t->tm_year + 1900,
-            t->tm_hour, t->tm_min, t->tm_sec);
+    time_t t = time(NULL);
+    struct tm *lt = localtime(&t);
+    fprintf(fp, "[%02d-%02d-%04d][%02d:%02d:%02d] - ",
+            lt->tm_mday, lt->tm_mon + 1, lt->tm_year + 1900,
+            lt->tm_hour, lt->tm_min, lt->tm_sec);
 
     va_list args;
-    va_start(args, format);
-    vfprintf(log, format, args);
+    va_start(args, fmt);
+    vfprintf(fp, fmt, args);
     va_end(args);
 
-    fprintf(log, "\n");
-    fclose(log);
+    fprintf(fp, "\n");
+    fclose(fp);
 }
 
-void execute_command(char *const argv[]) {
+void run_process(char *const args[]) {
     pid_t pid = fork();
     if (pid == 0) {
-        execvp(argv[0], argv);
-        perror("execvp failed");
+        execvp(args[0], args);
+        perror("execvp error");
         exit(EXIT_FAILURE);
     } else if (pid > 0) {
         int status;
         waitpid(pid, &status, 0);
     } else {
-        perror("fork failed");
+        perror("fork error");
     }
 }
 
-void download_and_unzip() {
-    char *wget_argv[] = {"wget", "-O", ZIP_NAME, DOWNLOAD_URL, NULL};
-    execute_command(wget_argv);
+void fetch_and_extract() {
+    char *get[] = {"wget", "-O", FILE_ZIP, URL_DOWNLOAD, NULL};
+    run_process(get);
 
-    mkdir(STARTER_KIT_DIR, 0755);
-    char *unzip_argv[] = {"unzip", "-q", ZIP_NAME, "-d", STARTER_KIT_DIR, NULL};
-    execute_command(unzip_argv);
+    mkdir(DIR_KIT, 0755);
+    char *unzip[] = {"unzip", "-q", FILE_ZIP, "-d", DIR_KIT, NULL};
+    run_process(unzip);
 
-    remove(ZIP_NAME);
+    remove(FILE_ZIP);
 }
 
-int is_base64(const char *str) {
+int valid_base64(const char *str) {
     while (*str) {
         if (!(isalnum(*str) || *str == '+' || *str == '/' || *str == '='))
             return 0;
@@ -74,62 +73,60 @@ int is_base64(const char *str) {
     return 1;
 }
 
-char *base64_decode(const char *data) {
-    char command[512];
-    snprintf(command, sizeof(command), "echo '%s' | base64 -d", data);
-    FILE *fp = popen(command, "r");
-    if (!fp) return NULL;
+char *decode_b64(const char *input) {
+    char cmd[512];
+    snprintf(cmd, sizeof(cmd), "echo '%s' | base64 -d", input);
+    FILE *pipe = popen(cmd, "r");
+    if (!pipe) return NULL;
 
-    char *decoded = malloc(256);
-    if (!decoded) return NULL;
+    char *output = malloc(256);
+    if (!output) return NULL;
 
-    if (fgets(decoded, 256, fp) == NULL) {
-        pclose(fp);
-        free(decoded);
+    if (!fgets(output, 256, pipe)) {
+        free(output);
+        pclose(pipe);
         return NULL;
     }
-    pclose(fp);
-    decoded[strcspn(decoded, "\n")] = 0;
-    return decoded;
+    pclose(pipe);
+
+    output[strcspn(output, "\n")] = 0;
+    return output;
 }
 
-void move_to_quarantine() {
-    struct stat st = {0};
-    if (stat(QUARANTINE_DIR, &st) == -1) {
-        mkdir(QUARANTINE_DIR, 0700);
+void quarantine_files() {
+    struct stat s;
+    if (stat(DIR_ISOLATION, &s) == -1) {
+        mkdir(DIR_ISOLATION, 0700);
     }
 
-    DIR *d = opendir(STARTER_KIT_DIR);
-    if (!d) return;
+    DIR *src = opendir(DIR_KIT);
+    if (!src) return;
 
-    struct dirent *dir;
-    char src[512], dest[512];
-    while ((dir = readdir(d)) != NULL) {
-        if (dir->d_type == DT_REG) {
-            snprintf(src, sizeof(src), "%s/%s", STARTER_KIT_DIR, dir->d_name);
-            snprintf(dest, sizeof(dest), "%s/%s", QUARANTINE_DIR, dir->d_name);
-            if (rename(src, dest) == 0) {
-                write_log("%s - Successfully moved to quarantine directory.", dir->d_name);
+    struct dirent *entry;
+    while ((entry = readdir(src)) != NULL) {
+        if (entry->d_type == DT_REG) {
+            char from[512], to[512];
+            snprintf(from, sizeof(from), "%s/%s", DIR_KIT, entry->d_name);
+            snprintf(to, sizeof(to), "%s/%s", DIR_ISOLATION, entry->d_name);
+            if (rename(from, to) == 0) {
+                log_activity("%s - Moved to quarantine.", entry->d_name);
             }
         }
     }
-    closedir(d);
+    closedir(src);
 }
 
-void daemon_decrypt() {
-    struct stat st = {0};
-    if (stat("quarantine", &st) == -1) {
-        mkdir("quarantine", 0700);
-    }
+void decrypt_daemon() {
+    mkdir(DIR_ISOLATION, 0700);
 
     pid_t pid = fork();
     if (pid < 0) exit(EXIT_FAILURE);
     if (pid > 0) {
-        FILE *fp = fopen("daemon.pid", "w");
+        FILE *fp = fopen(FILE_PID, "w");
         if (fp) {
             fprintf(fp, "%d\n", pid);
             fclose(fp);
-            write_log("Successfully started decryption process with PID %d.", pid);
+            log_activity("Started decrypt daemon with PID %d.", pid);
         }
         exit(EXIT_SUCCESS);
     }
@@ -137,113 +134,108 @@ void daemon_decrypt() {
     umask(0);
     setsid();
     chdir(".");
+
     fclose(stdin);
     fclose(stdout);
     fclose(stderr);
 
     while (1) {
-        DIR *d = opendir("quarantine");
-        if (!d) {
+        DIR *qdir = opendir(DIR_ISOLATION);
+        if (!qdir) {
             sleep(5);
             continue;
         }
 
-        struct dirent *dir;
-        while ((dir = readdir(d)) != NULL) {
-            if (dir->d_type == DT_REG && is_base64(dir->d_name)) {
-                char oldname[512], newname[512];
-                snprintf(oldname, sizeof(oldname), "quarantine/%s", dir->d_name);
+        struct dirent *file;
+        while ((file = readdir(qdir)) != NULL) {
+            if (file->d_type == DT_REG && valid_base64(file->d_name)) {
+                char old[512], new[512];
+                snprintf(old, sizeof(old), "%s/%s", DIR_ISOLATION, file->d_name);
 
-                char *decoded = base64_decode(dir->d_name);
-                if (decoded && strlen(decoded) > 0 && strchr(decoded, '/') == NULL) {
-                    snprintf(newname, sizeof(newname), "quarantine/%s", decoded);
-
-                    if (rename(oldname, newname) == 0) {
-                        write_log("%s - Successfully decrypted to %s.", dir->d_name, decoded);
+                char *decoded = decode_b64(file->d_name);
+                if (decoded && strlen(decoded) && !strchr(decoded, '/')) {
+                    snprintf(new, sizeof(new), "%s/%s", DIR_ISOLATION, decoded);
+                    if (rename(old, new) == 0) {
+                        log_activity("%s - Decrypted to %s.", file->d_name, decoded);
                     }
                 }
-
                 free(decoded);
             }
         }
-        closedir(d);
+
+        closedir(qdir);
         sleep(5);
     }
 }
 
+void restore_files() {
+    DIR *qdir = opendir(DIR_ISOLATION);
+    if (!qdir) return;
 
-void return_files() {
-    DIR *d = opendir(QUARANTINE_DIR);
-    if (!d) return;
-
-    struct dirent *dir;
-    char src[512], dest[512];
-    while ((dir = readdir(d)) != NULL) {
-        if (dir->d_type == DT_REG) {
-            snprintf(src, sizeof(src), "%s/%s", QUARANTINE_DIR, dir->d_name);
-            snprintf(dest, sizeof(dest), "%s/%s", STARTER_KIT_DIR, dir->d_name);
-            if (rename(src, dest) == 0) {
-                write_log("%s - Successfully returned to starter kit directory.", dir->d_name);
+    struct dirent *file;
+    while ((file = readdir(qdir)) != NULL) {
+        if (file->d_type == DT_REG) {
+            char src[512], dst[512];
+            snprintf(src, sizeof(src), "%s/%s", DIR_ISOLATION, file->d_name);
+            snprintf(dst, sizeof(dst), "%s/%s", DIR_KIT, file->d_name);
+            if (rename(src, dst) == 0) {
+                log_activity("%s - Restored to starter kit.", file->d_name);
             }
         }
     }
-    closedir(d);
+    closedir(qdir);
 }
 
-void eradicate_quarantine() {
-    DIR *d = opendir(QUARANTINE_DIR);
-    if (!d) return;
+void purge_quarantine() {
+    DIR *qdir = opendir(DIR_ISOLATION);
+    if (!qdir) return;
 
-    struct dirent *dir;
-    char filepath[512];
-    while ((dir = readdir(d)) != NULL) {
-        if (dir->d_type == DT_REG) {
-            snprintf(filepath, sizeof(filepath), "%s/%s", QUARANTINE_DIR, dir->d_name);
-            if (remove(filepath) == 0) {
-                write_log("%s - Successfully deleted.", dir->d_name);
+    struct dirent *file;
+    while ((file = readdir(qdir)) != NULL) {
+        if (file->d_type == DT_REG) {
+            char path[512];
+            snprintf(path, sizeof(path), "%s/%s", DIR_ISOLATION, file->d_name);
+            if (remove(path) == 0) {
+                log_activity("%s - File deleted.", file->d_name);
             }
         }
     }
-    closedir(d);
+    closedir(qdir);
 }
 
-void shutdown_daemon() {
-    FILE *fp = fopen(PID_FILE, "r");
+void stop_daemon() {
+    FILE *fp = fopen(FILE_PID, "r");
     if (!fp) return;
 
     pid_t pid;
-    if (fscanf(fp, "%d", &pid) != 1) {
-        fclose(fp);
-        return;
+    if (fscanf(fp, "%d", &pid) == 1) {
+        if (kill(pid, SIGTERM) == 0) {
+            log_activity("Stopped daemon with PID %d.", pid);
+            remove(FILE_PID);
+        }
     }
     fclose(fp);
-
-    if (kill(pid, SIGTERM) == 0) {
-        write_log("Successfully shut off decryption process with PID %d.", pid);
-        remove(PID_FILE);
-    }
 }
 
 int main(int argc, char *argv[]) {
-    mkdir(STARTER_KIT_DIR, 0755);
-    mkdir(QUARANTINE_DIR, 0755);
+    mkdir(DIR_KIT, 0755);
+    mkdir(DIR_ISOLATION, 0755);
 
     if (argc == 1) {
-        
-        download_and_unzip();
+        fetch_and_extract();
         return 0;
     }
 
     if (strcmp(argv[1], "--decrypt") == 0) {
-        daemon_decrypt();
+        decrypt_daemon();
     } else if (strcmp(argv[1], "--quarantine") == 0) {
-        move_to_quarantine();
+        quarantine_files();
     } else if (strcmp(argv[1], "--return") == 0) {
-        return_files();
+        restore_files();
     } else if (strcmp(argv[1], "--eradicate") == 0) {
-        eradicate_quarantine();
+        purge_quarantine();
     } else if (strcmp(argv[1], "--shutdown") == 0) {
-        shutdown_daemon();
+        stop_daemon();
     } else {
         fprintf(stderr, "Usage: %s [--decrypt|--quarantine|--return|--eradicate|--shutdown]\n", argv[0]);
         return 1;
@@ -251,5 +243,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-
-
