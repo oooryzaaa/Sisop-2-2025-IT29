@@ -278,4 +278,27 @@ Shutdown:
 [dd-mm-YYYY][HH:MM:SS] - Successfully shut off decryption process with PID <pid>.
 ```
 
+- Pembuatan activity log :
+
+```bash
+void log_activity(const char *fmt, ...) {
+    FILE *fp = fopen(FILE_LOG, "a");
+    if (!fp) return;
+
+    time_t t = time(NULL);
+    struct tm *lt = localtime(&t);
+    fprintf(fp, "[%02d-%02d-%04d][%02d:%02d:%02d] - ",
+            lt->tm_mday, lt->tm_mon + 1, lt->tm_year + 1900,
+            lt->tm_hour, lt->tm_min, lt->tm_sec);
+
+    va_list args;
+    va_start(args, fmt);
+    vfprintf(fp, fmt, args);
+    va_end(args);
+
+    fprintf(fp, "\n");
+    fclose(fp);
+}
+
+```
 #
