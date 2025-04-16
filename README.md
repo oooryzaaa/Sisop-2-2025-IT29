@@ -10,6 +10,8 @@ Dikerjakan oleh : Angga Firmansyah
 
 A. Sebagai teman yang baik, Mafuyu merekomendasikan Kanade untuk mendownload dan unzip sebuah starter kit berisi file - file acak (sudah termasuk virus) melalui link berikut agar dapat membantu Kanade dalam mengidentifikasi virus - virus yang akan datang. Jangan lupa untuk menghapus file zip asli setelah melakukan unzip
 
+Penyelesaian : 
+
 - Mendownload file dan melakukan unzip file, serta menghapus file zip yang telah di unzip :
 
 ```bash
@@ -42,6 +44,11 @@ void fetch_and_extract() {
     remove(FILE_ZIP);
 }
 ```
+Function diatas(fetch_and_extract) mendownload file yang telah diberikan di link dan juga menghapus file.zip yang telah di download dan telah di ekstrak/
+
+Dokumentasi : ![image](https://github.com/user-attachments/assets/2a9399b6-ff42-4e9b-9520-2fcfba82ad26)
+![image](https://github.com/user-attachments/assets/cb928aca-3aee-4e6b-be52-d2f17556eb8e)
+
 
 
 #
@@ -84,6 +91,13 @@ char *decode_b64(const char *input) {
 }
 
 ```
+
+Dengan menggunakan algoritma base64 untung melakukan dekripsi file starter_kit yang akan dipindahkan. Berikut adalah contoh dokumentasi hasil menyalakan dekripsi dengan bukti activity.log :
+
+Dokumentasi : 
+
+![image](https://github.com/user-attachments/assets/cbb99d51-0e73-45d0-a390-ded984f35594)
+
 
 #
 
@@ -194,6 +208,12 @@ void restore_files() {
 ```
 
 #
+
+Contoh Dokumentasi hasil quarantine dengan dekripsi --decrypt sedang berjalan, maka hasil file yang telah diubah ke file karantina. Hasil file yang belum terdekripsi telah terdekripsi dengan hasil sebagai berikut
+
+Dokumentasi : 
+
+![image](https://github.com/user-attachments/assets/36c62256-76ac-4583-b495-d1fa77961768)
 
 
 D. Ena memberikan ide kepada mereka untuk menambahkan fitur untuk menghapus file - file yang ada pada directory karantina. Mendengar ide yang bagus tersebut, Kanade pun mencoba untuk menambahkan fitur untuk menghapus seluruh file yang ada di dalam directory karantina.
