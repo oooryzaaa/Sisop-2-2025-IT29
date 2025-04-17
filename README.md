@@ -46,7 +46,8 @@ void fetch_and_extract() {
 ```
 Function diatas(fetch_and_extract) mendownload file yang telah diberikan di link dan juga menghapus file.zip yang telah di download dan telah di ekstrak/
 
-Dokumentasi : ![image](https://github.com/user-attachments/assets/2a9399b6-ff42-4e9b-9520-2fcfba82ad26)
+Dokumentasi : 
+![image](https://github.com/user-attachments/assets/2a9399b6-ff42-4e9b-9520-2fcfba82ad26)
 ![image](https://github.com/user-attachments/assets/cb928aca-3aee-4e6b-be52-d2f17556eb8e)
 
 
@@ -276,6 +277,90 @@ void stop_daemon() {
 
 
 ```
+
+Dokumentasi : ![image](https://github.com/user-attachments/assets/fb4e7704-d8bd-42bb-902f-a0d6e5aa1382)
+
+Penjelasan : Diatas merupakan hasil dari activity log yang dimana program dekripsi diatas berhasil berhenti 
+
+#  REVISI SOAL
+
+a. Diperlukan revisi dikarenakan file yang telah terdownload tidak terjadi duplikasi file saat command /starterkit dijalankan. Saat selesai dilakukan revisi, file yang didownload telah bisa didownload dengan duplikat sebagai berikut :
+
+- Pengerjaan Kode :
+
+```bash
+void fetch_and_extract() {
+    char *get[] = {"wget", "-O", FILE_ZIP, URL_DOWNLOAD, NULL};
+    run_process(get);
+
+
+    const char *temp_dir = "tmp_extract";
+    mkdir(temp_dir, 0755);
+
+    
+    char *unzip[] = {"unzip", "-q", FILE_ZIP, "-d", (char *)temp_dir, NULL};
+    run_process(unzip);
+
+
+    DIR *tmp = opendir(temp_dir);
+    if (tmp) {
+        struct dirent *entry;
+        while ((entry = readdir(tmp)) != NULL) {
+            if (entry->d_type == DT_REG) {
+                char src[512], dst[512];
+                snprintf(src, sizeof(src), "%s/%s", temp_dir, entry->d_name);
+
+                
+                snprintf(dst, sizeof(dst), "%s/%s", DIR_KIT, entry->d_name);
+                int counter = 1;
+                while (access(dst, F_OK) == 0) {
+                    char newname[512];
+                    
+                    char *dot = strrchr(entry->d_name, '.');
+                    if (dot) {
+                        size_t base_len = dot - entry->d_name;
+                        char base[256], ext[256];
+                        strncpy(base, entry->d_name, base_len);
+                        base[base_len] = '\0';
+                        snprintf(ext, sizeof(ext), "%s", dot);
+                        snprintf(newname, sizeof(newname), "%s/%s(%d)%s", DIR_KIT, base, counter++, ext);
+                    } else {
+                        snprintf(newname, sizeof(newname), "%s/%s(%d)", DIR_KIT, entry->d_name, counter++);
+                    }
+                    snprintf(dst, sizeof(dst), "%s", newname);
+                }
+
+                
+                int in = open(src, O_RDONLY);
+                int out = open(dst, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                if (in != -1 && out != -1) {
+                    char buf[4096];
+                    ssize_t len;
+                    while ((len = read(in, buf, sizeof(buf))) > 0) {
+                        write(out, buf, len);
+                    }
+                    log_activity("%s - Extracted to %s.", entry->d_name, dst);
+                    close(in);
+                    close(out);
+                }
+            }
+        }
+        closedir(tmp);
+    }
+
+   
+    char *rm_tmp[] = {"rm", "-rf", (char *)temp_dir, NULL};
+    run_process(rm_tmp);
+    remove(FILE_ZIP);
+}
+
+```
+
+Dokumentasi : 
+
+![image](https://github.com/user-attachments/assets/e7821057-9841-4828-bd16-5f46cf5df605)
+
+Dokumentasi diatas merupakan bukti bahwa sudah terjadi pembetulan untuk pengerjaan kode soal bagian A.
 
 #
 
