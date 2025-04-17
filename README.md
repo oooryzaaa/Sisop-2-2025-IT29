@@ -243,6 +243,11 @@ void purge_quarantine() {
 }
 
 ```
+Dokumentasi : 
+![image](https://github.com/user-attachments/assets/e80ccc86-9572-47e3-9777-f6d81af1eba4)
+
+Diatas merupakan hasil pekerjaan --eradicate yang telah menghapus seluruh file yang berada di direktori quarantine.
+
 
 #
 
@@ -319,8 +324,11 @@ void log_activity(const char *fmt, ...) {
     fprintf(fp, "\n");
     fclose(fp);
 }
-
 ```
+
+Dokumentasi : ![image](https://github.com/user-attachments/assets/efcea73c-36d3-41cb-8241-596c5b6bc62f)
+
+
 # Soal 4
 
 Pengerjaan dari Oryza Qiara Ramadhani (084)
