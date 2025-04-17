@@ -366,6 +366,12 @@ Dokumentasi diatas merupakan bukti bahwa sudah terjadi pembetulan untuk pengerja
 
 F. Mafuyu dan Kanade juga ingin program mereka dapat digunakan dengan aman dan nyaman tanpa membahayakan penggunanya sendiri, mengingat Mizuki yang masih linglung setelah keluar dari labirin Santerra De Laponte. Oleh karena itu, tambahkan error handling sederhana untuk mencegah penggunaan yang salah pada program tersebut.
 
+Dokumentasi : 
+
+![image](https://github.com/user-attachments/assets/6a618f6b-ecb4-4984-82fa-cfaa8ebe7e89)
+
+Error handling ketika command program yang dijalankan memiliki kesalahan penulisan maka akan muncul notifikasi penggunaan command yang benar.
+
 #
 
 G. Terakhir, untuk mencatat setiap penggunaan program ini, Kanade beserta Mafuyu ingin menambahkan log dari setiap penggunaan program ini dan menyimpannya ke dalam file bernama activity.log.
