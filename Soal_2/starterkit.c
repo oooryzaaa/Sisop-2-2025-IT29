@@ -57,12 +57,67 @@ void fetch_and_extract() {
     char *get[] = {"wget", "-O", FILE_ZIP, URL_DOWNLOAD, NULL};
     run_process(get);
 
-    mkdir(DIR_KIT, 0755);
-    char *unzip[] = {"unzip", "-q", FILE_ZIP, "-d", DIR_KIT, NULL};
+
+    const char *temp_dir = "tmp_extract";
+    mkdir(temp_dir, 0755);
+
+    
+    char *unzip[] = {"unzip", "-q", FILE_ZIP, "-d", (char *)temp_dir, NULL};
     run_process(unzip);
 
+
+    DIR *tmp = opendir(temp_dir);
+    if (tmp) {
+        struct dirent *entry;
+        while ((entry = readdir(tmp)) != NULL) {
+            if (entry->d_type == DT_REG) {
+                char src[512], dst[512];
+                snprintf(src, sizeof(src), "%s/%s", temp_dir, entry->d_name);
+
+                
+                snprintf(dst, sizeof(dst), "%s/%s", DIR_KIT, entry->d_name);
+                int counter = 1;
+                while (access(dst, F_OK) == 0) {
+                    char newname[512];
+                    
+                    char *dot = strrchr(entry->d_name, '.');
+                    if (dot) {
+                        size_t base_len = dot - entry->d_name;
+                        char base[256], ext[256];
+                        strncpy(base, entry->d_name, base_len);
+                        base[base_len] = '\0';
+                        snprintf(ext, sizeof(ext), "%s", dot);
+                        snprintf(newname, sizeof(newname), "%s/%s(%d)%s", DIR_KIT, base, counter++, ext);
+                    } else {
+                        snprintf(newname, sizeof(newname), "%s/%s(%d)", DIR_KIT, entry->d_name, counter++);
+                    }
+                    snprintf(dst, sizeof(dst), "%s", newname);
+                }
+
+                
+                int in = open(src, O_RDONLY);
+                int out = open(dst, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                if (in != -1 && out != -1) {
+                    char buf[4096];
+                    ssize_t len;
+                    while ((len = read(in, buf, sizeof(buf))) > 0) {
+                        write(out, buf, len);
+                    }
+                    log_activity("%s - Extracted to %s.", entry->d_name, dst);
+                    close(in);
+                    close(out);
+                }
+            }
+        }
+        closedir(tmp);
+    }
+
+   
+    char *rm_tmp[] = {"rm", "-rf", (char *)temp_dir, NULL};
+    run_process(rm_tmp);
     remove(FILE_ZIP);
 }
+
 
 int valid_base64(const char *str) {
     while (*str) {
