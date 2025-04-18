@@ -12,17 +12,18 @@
 #define LOG_FILE "debugmon.log"
 #define PID_FILE "debugmon.pid"
 
-void debugmon_log(const char *proc, const char *status){
+void debugmon_log(const char *operation, const char *proc, const char *status){
     FILE *log = fopen(LOG_FILE, "a");
     if (!log) return;
     time_t t = time(NULL);
     struct tm *tm = localtime(&t);
-    fprintf(log, "[%02d:%02d:%04d]-[%02d:%02d:%02d]_%s_%s\n",
+    fprintf(log, "[%02d:%02d:%04d]-[%02d:%02d:%02d]_%s_%s_%s\n",
             tm->tm_mday, tm->tm_mon+1, tm->tm_year+1900,
             tm->tm_hour, tm->tm_min, tm->tm_sec,
-            proc, status);
+            operation, proc, status);
     fclose(log);
 }
+
 void list_user(const char *user) {
     struct passwd *pw = getpwnam(user);
     if (!pw) { perror("user tidak ditemukan"); return; }
@@ -70,6 +71,7 @@ void list_user(const char *user) {
     }
     closedir(dir);
 }
+
 void run_daemon(const char *user) {
     pid_t pid = fork();
     if (pid < 0) exit(1);
@@ -80,6 +82,9 @@ void run_daemon(const char *user) {
     }
     setsid();
     chdir("/");
+
+    debugmon_log("daemon", "debugmon", "STARTED");
+
     struct passwd *pw = getpwnam(user);
     if (!pw) exit(1);
     uid_t uid = pw->pw_uid;
@@ -119,7 +124,7 @@ void run_daemon(const char *user) {
                 }
                 if (!already_logged) {
                     strcpy(seen[seen_count++], name);
-                    debugmon_log(name, "RUNNING");
+                    debugmon_log("daemon", name, "RUNNING");
                 }
             }
         }
@@ -127,6 +132,7 @@ void run_daemon(const char *user) {
         sleep(5);
     }
 }
+
 void stop_daemon() {
     FILE *pf = fopen(PID_FILE, "r");
     if (!pf) { printf("Daemon tidak berjalan.\n"); return; }
@@ -135,14 +141,16 @@ void stop_daemon() {
     fclose(pf);
     if (kill(pid, SIGTERM) == 0) {
         remove(PID_FILE);
+        debugmon_log("stop", "debugmon", "STOPPED");
         printf("Daemon berhenti.\n");
     } else {
         perror("Gagal menghentikan daemon");
     }
 }
+
 void fail_user(const char *username) {
     const char *target_procs[] = {"node", "sh", "bash", "debugmon", NULL};
-    
+
     struct passwd *pw = getpwnam(username);
     if (!pw) {
         fprintf(stderr, "User '%s' tidak ditemukan\n", username);
@@ -160,7 +168,7 @@ void fail_user(const char *username) {
 
         char path[512];
         snprintf(path, sizeof(path), "/proc/%s/comm", ent->d_name);
-        
+
         FILE *comm = fopen(path, "r");
         if (!comm) continue;
 
@@ -180,9 +188,9 @@ void fail_user(const char *username) {
             pid_t pid = atoi(ent->d_name);
             if (pid == getpid()) continue;
             if (kill(pid, SIGTERM) == 0) {
-                debugmon_log(proc_name, "FAILED");
+                debugmon_log("fail", proc_name, "FAILED");
             } else {
-                debugmon_log(proc_name, "KILL_FAILED");
+                debugmon_log("fail", proc_name, "KILL_FAILED");
             }
         }
     }
@@ -211,7 +219,7 @@ void revert_user(const char *user) {
         FILE *f = fopen(path, "r");
         if (!f) continue;
 
-        char line[256], name[256] = "?", proc_name[256] = "?", mem[256] = "0";
+        char line[256], name[256] = "?", mem[256] = "0";
         uid_t pid_uid = -1;
         while (fgets(line, sizeof(line), f)) {
             if (sscanf(line, "Uid:\t%u", &pid_uid)) continue;
@@ -220,12 +228,13 @@ void revert_user(const char *user) {
         }
         fclose(f);
         if (pid_uid == uid) {
-            debugmon_log(name, "RUNNING");
+            debugmon_log("revert", name, "RUNNING");
         }
     }
     closedir(proc);
     printf("Akses user %s kembali seperti semula.\n", user);
 }
+
 int main(int argc, char *argv[]) {
     if (argc < 2) {
         printf("Usage: ./debugmon [list|daemon|stop|fail|revert] <user>\n");
