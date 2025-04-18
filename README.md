@@ -363,6 +363,15 @@ Karena kamu sudah mendapatkan password tersebut, kamu mencoba untuk mengecek apa
 
 Dikerjakan oleh : Angga Firmansyah
 
+# Library yang Digunakan
+- stdio.h: Untuk input/output dasar seperti fopen, fprintf, fgets.
+- stdlib.h: Untuk manajemen memori dan proses seperti malloc, exit, popen.
+- string.h: Untuk manipulasi string seperti strlen, strchr, strcspn.
+- unistd.h: Untuk manajemen proses dan file seperti fork, execvp, umask, setsid.
+- sys/types.h: Untuk tipe data terkait proses seperti pid_t.
+- sys/stat.h: Untuk pemeriksaan status file seperti mkdir, stat.
+- dirent.h: Untuk membaca direktori menggunakan opendir, readdir, closedir.
+
 A. Sebagai teman yang baik, Mafuyu merekomendasikan Kanade untuk mendownload dan unzip sebuah starter kit berisi file - file acak (sudah termasuk virus) melalui link berikut agar dapat membantu Kanade dalam mengidentifikasi virus - virus yang akan datang. Jangan lupa untuk menghapus file zip asli setelah melakukan unzip
 
 Penyelesaian : 
@@ -400,6 +409,9 @@ void fetch_and_extract() {
 }
 ```
 Function diatas(fetch_and_extract) mendownload file yang telah diberikan di link dan juga menghapus file.zip yang telah di download dan telah di ekstrak/
+- wget digunakan untuk mendownload file zip dari URL.
+- unzip digunakan untuk mengekstrak isi zip ke dalam folder yang telah ditentukan.
+- remove(FILE_ZIP) menghapus file zip setelah ekstraksi selesai
 
 Dokumentasi : 
 ![image](https://github.com/user-attachments/assets/2a9399b6-ff42-4e9b-9520-2fcfba82ad26)
@@ -446,8 +458,16 @@ char *decode_b64(const char *input) {
     return output;
 }
 ```
+- setsid() digunakan untuk membuat proses menjadi daemon.
+- umask(0) mengatur mask untuk hak akses file.
+- Proses daemon ini berjalan terus-menerus untuk mendekripsi dan memindahkan file.
 
-Dengan menggunakan algoritma base64 untung melakukan dekripsi file starter_kit yang akan dipindahkan. Berikut adalah contoh dokumentasi hasil menyalakan dekripsi dengan bukti activity.log :
+- valid_base64 & decode_b64
+- Fungsi valid_base64 memastikan bahwa nama file valid sebagai Base64, sementara decode_b64 digunakan untuk mendekripsi nama file tersebut.
+- fork() digunakan untuk membuat proses anak.
+- execvp() digunakan untuk menjalankan perintah shell yang diberikan dalam args.
+- waitpid() digunakan untuk menunggu proses anak selesai sebelum melanjutkan.
+- Dengan menggunakan algoritma base64 untung melakukan dekripsi file starter_kit yang akan dipindahkan. Berikut adalah contoh dokumentasi hasil menyalakan dekripsi dengan bukti activity.log :
 
 Dokumentasi : 
 
