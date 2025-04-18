@@ -719,3 +719,15 @@ int main(int argc, char *argv[]) {
 ```
 Pada bagian ini akan memeriksa apakah command yang kita ketik itu sudah sesuai dengan format, apabila tidak sesuai maka akan keluar pesan bahwa `Perintah tidak valid`
 
+# REVISI
+
+Dari yang sebelumnya pada saat kita memanggil file debugmon.log itu hanya akan menampilkan proses nya sedang dalam tahap running atau failed saja, namun setelah direvisi akan ada tambahan informasi sedang atau sehabis memberikan perintah "stop", "fail" atau "revert" pada terminal tersebut.
+
+- Ini pada saat kita menjalankan `./debugmon stop`
+  ![image](https://github.com/user-attachments/assets/857ea388-0fbf-4685-8118-098cf4de9cb7)
+
+- Ini pada saat kita mematikan background process
+  ![image](https://github.com/user-attachments/assets/c3272a94-abc2-4b3f-8bac-c6de0a1bebd7)
+
+- Ini apabila kita sedang memerintah untuk mengembalikan akses ke semula (REVERT)
+![image](https://github.com/user-attachments/assets/70092ceb-2727-4d08-bb38-6103207423ba)
