@@ -484,8 +484,10 @@ void list_user(const char *user) {
 }
 ```
 Menggunakan command `./debugmon list <user>`
+
 ![image](https://github.com/user-attachments/assets/7282206d-a5cc-413e-a12a-253de7e1fadf)
-Dari sini dapat kita lihat bahwa setelah menjalankan command list user maka akan mengeluarkan output proses apa saja yang sedang berjalan.
+
+Dari sini dapat kita lihat bahwa setelah menjalankan command list user maka akan mengeluarkan output proses apa saja yang sedang berjalan. Dalam list tersebut akan memuat PID, nama proses, penggunaan CPU dan juga memori. Empat informasi proses itu akan diperoleh dari `/proc/<pid>/status` dan `/proc/<pid>/stat`.
 
 B. Pembuatan proses background (Daemon)
 ```bash
@@ -548,7 +550,10 @@ void run_daemon(const char *user) {
 }
 ```
 Menggunakan command `./debugmon daemon <user>`
+
 ![image](https://github.com/user-attachments/assets/cd80abf4-4c59-40f5-a983-067d6cc6b31a)
+
+Fitur ini akan mengaktifkan proses debugmon yang akan berjalan di background lalu `sleep(5)` ini akan memantau semua prosesnya secara berkala tiap 5 detik. Dan disetiap proses baru akan disimpan pada debugmon.log dengan status `RUNNING`.
 
 C. Penghentian background process
 ```bash
@@ -566,8 +571,12 @@ void stop_daemon() {
     }
 }
 ```
+
 Menggunakan command `./debugmon stop`
+
 ![image](https://github.com/user-attachments/assets/7c3b59be-86a8-4dcb-8b10-a15f5650ea11)
+
+Fitur ini akan menghentikan daemon yang sedang berjalan. Program akan membaca PID dari file debugmon.pid dan mengirim sinyal SIGTERM ke proses tersebut. Jika berhasil, file PID akan dihapus dan pesan bahwa daemon telah berhenti akan ditampilkan.
 
 D. Mematikan background process
 ```bash
@@ -621,8 +630,11 @@ void fail_user(const char *username) {
 }
 ```
 Menggunakan command `./debugmon fail <user>`
+
 ![image](https://github.com/user-attachments/assets/b0b0d427-9ae4-492b-a25a-86cc6ec67914)
 ![image](https://github.com/user-attachments/assets/59494cb7-f773-488b-99a3-193756f3dd2e)
+
+Perintah ini akan menargetkannya pada proses seperti sh, bash, node dan debugmon lalu apabila sudah berhasil dihentikan maka akan dicatat pada debugmon.log sehingga status akan berubah menjadi `FAILED`.
 
 D. Mengembalikan akses user 
 ```bash
@@ -665,7 +677,10 @@ void revert_user(const char *user) {
 }
 ```
 Menggunakan command `./debugmon revert <user>`
+
 ![image](https://github.com/user-attachments/assets/b28a871e-bbcf-47e9-b67a-3e812a7255c9)
+
+Saat command revert dijalankan, proses yang sebelumnya sudah dimatikan akan diaktifkan kembali menjadi ke semula dan status nya pun akan kembali menjadi `RUNNING`.
 
 - Penyimpanan hasil proses yang telah dijalankan
 ```bash
@@ -681,7 +696,10 @@ void debugmon_log(const char *proc, const char *status){
     fclose(log);
 }
 ```
+
 ![image](https://github.com/user-attachments/assets/e7d892df-f42a-4ce6-817b-53b6b0c4f7f7)
+
+Semua proses akan tercatat pada debugmon.log ini dengan format `[DD:MM:YYYY]-[HH:MM:SS]_NAMAPROSES_STATUS`
 
 - Kumpulan argumen debugmon
 ```bash
@@ -699,3 +717,5 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 ```
+Pada bagian ini akan memeriksa apakah command yang kita ketik itu sudah sesuai dengan format, apabila tidak sesuai maka akan keluar pesan bahwa `Perintah tidak valid`
+
